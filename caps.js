@@ -5,6 +5,10 @@
 // i.e. “EVENT {}”
 
 const event = require('lib/events.js');
-require ('dotenv').config();
 
-const shipPackage
+require ('dotenv').config();
+require('lib/events.js');
+require('lib/vendor.js');
+// engaging our vendor module
+const shipPackage = require('./lib/vendor.js');
+// should listen for 
