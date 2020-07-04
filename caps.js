@@ -13,3 +13,8 @@ require('lib/vendor.js');
 const shipPackage = require('./lib/vendor.js');
 // Manages the state of every package (ready for pickup, in transit, delivered, etc)
 // TODO: Set up listeners for each event:
+event.on('package sorted for pick-up', (payload) => {
+    let timeStamp = new Date();
+    console.log( {EVENT: 'ready for pickup', timeStamp, payload} );
+    event.emit('package scanned and assigned to driver', payload);
+});
