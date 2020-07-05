@@ -1,16 +1,22 @@
 'use strict';
-// This is the Vendor Module:
-
-// Monitor the system for events …
+// VENDOR MODULE:
+// Monitors the system for the "delivered" event …
 
 require('dotenv').config();
-const event = require('./events.js');
+const netModule = require('net');
 const faker = require('faker');
-require('../caps.js');
+
+ // Declare our store name in the .env file
+const storeName = process.env.STORE_NAME || 'Sample Store';
+
+// Connect to the hub server...
+const Client = new netModule.Socket();
+Client.connect(3000, 'localhost', () => {
+    console.log('Vendor has connected to Server');
+});
 
 function buildAnOrder() { // this function creates the order object
-    let storeName = 'CAPS';
-    // let storeName = process.env.STORE_NAME; // Declare your store name (perhaps in a .env file, so that this module is re-usable)
+    
     let orderID = Math.ceil(Math.random() * 4000); // simulate a new customer via random order ID
     let clientName = faker.name.findName();
     let clientAddress = faker.fake(
@@ -35,9 +41,11 @@ function assignToDriver() {
         orderCount = orderCount + 1;
     };
 };
+
 // Whenever the ‘delivered’ event occurs, takes in payload and:
 event.on('delivered successfully', (payload) => { // Logs success message to the console
     console.log(`Order ${payload.orderID} was successfully delivered. Thank you!`)
 });
+
 // export as module to use in caps
 module.exports = assignToDriver;

@@ -2,10 +2,10 @@
 // DRIVER MODULE
 // Monitors the system for events …
 
-const net = require('net');
+const netModule = require('net');
 
 //Instantiate a socket for driver to connect to...
-const Client = new net.Socket();
+const Client = new netModule.Socket();
 
 // Connect to the CAPS server...
 Client.connect(3000, 'localhost', () => {
