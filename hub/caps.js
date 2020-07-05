@@ -1,32 +1,27 @@
 'use strict';
-// Main Hub Application:
-// Manages the state of every package (ready for pickup, in transit, delivered, etc)
-const event = require('lib/events.js');
-
 require ('dotenv').config();
-require('lib/events.js');
-require('lib/vendor.js');
+// Main Hub - CAPS Application Server:
 
-// engaging our vendor module
-const runShipments = require('./lib/vendor.js');
+// It has one job which is to accept all inbound events and data, validate them, and and then re-broadcast them to everyone except the sender. 
+// USED CLASS EXAMPLE(ty Jacob Knaack): https://github.com/codefellows/seattle-javascript-401d36/blob/master/class-18/review/CAPS/caps/caps.js
+// It doesn’t perform any logic other than to ensure that the inbound events are properly formatted before it broadcasts them.
 
-// The following listener, logs every event to the console with a timestamp & payload, then emits the trigger for the next event.
-event.on('package sorted for pick-up', (payload) => {
-    let timeStamp = new Date();
-    console.log( {EVENT: 'ready for pickup', timeStamp, payload} );
-    event.emit('package scanned, assigned to driver', payload);
-});
-// Simulate a driver embarking on their route with the package on-board.
-event.on('in-transit', (payload) => {
-    let timeStamp = new Date();
-    console.log( {EVENT: 'in transit', timeStamp, payload} );
-    event.emit('package is in transit', payload);   
-});
+const netModule = require('net');
 
-event.on('delivered', (payload) => {
-    let timeStamp = new Date();
-    console.log( {EVENT: 'delivered', timeStamp, payload} );
-    event.emit('delivered successfully', payload);   
+//Declare a PORT to use for the hub
+const PORT = process.env.PORT || 3000;
+
+// Accept inbound TCP connections on the declared port
+const server = net.createServer();
+
+// Creates a pool of connected clients
+const socketPool = {};
+
+server.on('connection', (socket) => {
+    const id = Math.floor(Math.random() * 100000000);
+    socketPool[id] = socket;
+    console.log(`Connection established at:: ${id}`);
+    socket.on('error', (e) => console.log(e));
+    socket.on('end', () => { delete socketPool[id]; });
+    socket.on('data', handleMessage);
 });
-// intiate shipping operations by calling our function.
-runShipments();
