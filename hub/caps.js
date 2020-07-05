@@ -9,7 +9,7 @@ require('dotenv').config();
 const netModule = require('net');
 
 // Declare a PORT to use for the hub
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 3001;
 
 // Accept inbound TCP connections on the declared port
 const server = net.createServer();

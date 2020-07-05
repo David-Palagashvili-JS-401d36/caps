@@ -1,25 +1,18 @@
 'use strict';
-// Drivers Module
+// DRIVER MODULE
+// Monitors the system for events …
 
-// Monitor the system for events …
+const net = require('net');
 
-// Log “delivered” to the console
+//Instantiate a socket for driver to connect to...
+const Client = new net.Socket();
 
-const event = require('./events.js');
-require('../caps.js');
+// Connect to the CAPS server...
+Client.connect(3000, 'localhost', () => {
+    console.log('Driver has connected to Server');
+});
 
-// https://developer.mozilla.org/en-US/docs/Web/API/WindowOrWorkerGlobalScope/setTimeout
 
-// On the ‘pickup’ event …
-function deliverAnOrder (payload) { // take in payload (carries the fake order)
-    setTimeout(function() { 
-        console.log(`DRIVER: picked up ${payload.orderID}`); // Log the ‘pickup’ event
-        event.emit('in-transit', payload); // Emit an ‘in-transit’ event with the payload you received
-    }, 1000); // Emit after waiting 1 second
-    setTimeout(function() { 
-        event.emit('delivered', payload); // Emit a ‘delivered’ event with the same payload
-    }, 3000); // Emit after waiting 3 seconds; that's a fast driver!
-};
 
 // on pick up event, trigger callback fn, signaling that the Driver is handling the package.
 event.on('package scanned, assigned to driver', deliverAnOrder);
