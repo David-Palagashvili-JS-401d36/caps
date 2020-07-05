@@ -12,13 +12,30 @@ Client.connect(3000, 'localhost', () => {
     console.log('Driver has connected to Server');
 });
 
+// TODO:needs to be up so that it can accept and re-emit events, maybe dedicate a function to check incoming events?
+
 // Listen for the data event coming in from the CAPS server...
-Client.on('data', (buffer) => {
-    let message = JSON.parse(buffer.toString());
-    if (message.event === 'package-ready-for-delivery') {
-      handleGoGetPackage(message.payload);
+Client.on('data', (buffer) => { // When data arrives,
+    let data = JSON.parse(buffer.toString()); // parse it (it should be JSON)
+    if (data.event === 'package sorted for pick-up') { // look for the event property,
+        deliverAnOrder(data.payload); // and begin processing.
     };
 });
 
-// on pick up event, trigger callback fn, signaling that the Driver is handling the package.
-event.on('package scanned, assigned to driver', deliverAnOrder);
+function deliverAnOrder (data) {
+    // console.log('CAPS driver payload', payload);
+    setTimeout(function () {
+        // Simulate picking up the package
+        console.log(`DRIVER: picked up ${data.payload.orderID}`); // log pick up to console
+        Client.write(JSON.stringify({ event: 'in-transit', payload: data.payload })); // Create a msg object wih event and payload as keys.
+
+        setTimeout(function () {
+            // Simulate delivering the package
+            console.log(`delivered: ${data.payload.orderId}`); // log delivery to console
+            Client.write(JSON.stringify({ event: 'delivered', payload: data.payload })); // Create a msg object wih event and payload as keys.
+        }, 3000); // Wait 3 seconds (delivery)
+    }, 1000); // Wait 1 second (pickup)
+};
+
+// export as module
+// module.exports = deliverAnOrder;
