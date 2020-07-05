@@ -55,3 +55,9 @@ function logger(data) {
         payload: payload
     });
 };
+// run the server on the declared port with confirmation message logged to console.
+server.listen(PORT, () => {
+    console.log(`Server is running on PORT:: ${PORT}`);
+});
+// export as module
+module.exports = handleData;
